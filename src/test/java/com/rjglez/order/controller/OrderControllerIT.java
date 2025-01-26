@@ -3,17 +3,21 @@ package com.rjglez.order.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonpath.JsonPath;
+import com.rjglez.order.client.InventoryClient;
 import com.rjglez.order.controller.request.OrderRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class OrderControllerIT {
+
+    @MockBean
+    private InventoryClient inventoryClient;
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,9 +43,13 @@ public class OrderControllerIT {
                 .quantity(quantity)
                 .build();
 
+        when(inventoryClient.checkStock(productId)).thenReturn(120);
+        doNothing().when(inventoryClient).reduceStock(productId, quantity);
+
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String orderRequestJson = ow.writeValueAsString(orderRequest);
 
+        // WHEN
         MvcResult result = mockMvc.perform(post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(orderRequestJson))
@@ -76,6 +87,9 @@ public class OrderControllerIT {
                 .productId(productId)
                 .quantity(quantity)
                 .build();
+
+        when(inventoryClient.checkStock(productId)).thenReturn(120);
+        doNothing().when(inventoryClient).reduceStock(productId, quantity);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String orderRequestJson = ow.writeValueAsString(orderRequest);

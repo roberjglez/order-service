@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder
-public record OrderEntity (UUID productId, int quantity) {
+public record OrderEntity (UUID id, UUID productId, int quantity) {
 }
