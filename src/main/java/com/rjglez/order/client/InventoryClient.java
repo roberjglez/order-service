@@ -1,6 +1,7 @@
 package com.rjglez.order.client;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,8 @@ public class InventoryClient {
     }
 
     public void reduceStock(UUID productId, int quantity) {
-        String reduceStockUrl = "http://localhost:8082/inventory/reduce/" + productId.toString() + "?quantity=" + quantity;
-        ResponseEntity<InventoryResponse> inventoryResponse = restTemplate.postForEntity(reduceStockUrl, null, InventoryResponse.class);
+        String reduceStockUrl = "http://localhost:8082/inventory/reduce/{productId}?quantity={quantity}";
+        ResponseEntity<InventoryResponse> inventoryResponse = restTemplate.exchange(reduceStockUrl, HttpMethod.PUT, null, InventoryResponse.class, productId.toString(), quantity);
 
         checkProductExists(inventoryResponse, productId);
         if (inventoryResponse.getStatusCode() == HttpStatus.BAD_REQUEST) {
