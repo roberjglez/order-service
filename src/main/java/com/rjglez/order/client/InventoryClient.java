@@ -16,7 +16,7 @@ public class InventoryClient {
     private final RestTemplate restTemplate;
 
     public int checkStock(UUID productId) {
-        String inventoryUrl = "http://localhost:8081/inventory/check/" + productId;
+        String inventoryUrl = "http://localhost:8082/inventory/check/" + productId.toString();
         ResponseEntity<InventoryResponse> inventoryResponse = restTemplate.getForEntity(inventoryUrl, InventoryResponse.class);
 
         checkProductExists(inventoryResponse, productId);
@@ -26,7 +26,7 @@ public class InventoryClient {
     }
 
     public void reduceStock(UUID productId, int quantity) {
-        String reduceStockUrl = "http://localhost:8081/inventory/reduce/" + productId + "?quantity=" + quantity;
+        String reduceStockUrl = "http://localhost:8082/inventory/reduce/" + productId.toString() + "?quantity=" + quantity;
         ResponseEntity<InventoryResponse> inventoryResponse = restTemplate.postForEntity(reduceStockUrl, null, InventoryResponse.class);
 
         checkProductExists(inventoryResponse, productId);

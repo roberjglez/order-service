@@ -31,7 +31,7 @@ public class OrderController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderResponse> getOrder(@PathVariable(value = "id") UUID id) {
         OrderResponse order = orderService.getOrder(id);
-        return Objects.isNull(order) ? ResponseEntity.noContent().build() : ResponseEntity.ok(order);
+        return Objects.isNull(order) ? ResponseEntity.notFound().build() : ResponseEntity.ok(order);
     }
 
 }
